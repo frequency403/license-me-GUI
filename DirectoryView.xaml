@@ -8,20 +8,48 @@
         mc:Ignorable="d"
         Title="Git Repositories Found" Height="450" Width="800">
     <Grid>
-        <ListView x:Name="GitGrid" d:ItemsSource="{d:SampleData ItemCount=5}">
+        <ListView x:Name="GitGrid">
             <ListView.Resources>
-                <local:GitDirectory x:Key="GitDirectory"/> 
+                <local:GitDirectory x:Key="GitDirectory"/>
             </ListView.Resources>
             <ListView.DataContext>
                 <Binding Source="{StaticResource GitDirectory}"></Binding>
             </ListView.DataContext>
+            <ListView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="AddLicense" Header="Add License" Click="AddLicenseC"/>
+                    <MenuItem x:Name="RemoveLicense" Header="Remove License" Click="RemoveLicenseC"/>
+                    <MenuItem x:Name="AddReadme" Header="Add Readme" Click="AddReadmeC"/>
+                    <MenuItem x:Name="RemoveReadme" Header="Remove Readme" Click="RemoveReadmeC"/>
+                </ContextMenu>
+            </ListView.ContextMenu>
             <ListView.View>
                 <GridView>
                     <GridView.Columns>
                         <GridViewColumn Header="Repository Name" DisplayMemberBinding="{Binding Name}"/>
-                        <GridViewColumn Header="Repository Path" DisplayMemberBinding="{Binding Path}"/>
+                        <GridViewColumn Header="Repository Path">
+                            <GridViewColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding DisplayPath}">
+                                        <TextBlock.ToolTip>
+                                            <ToolTip>
+                                                <TextBlock Text="{Binding Path}"/>
+                                            </ToolTip>
+                                        </TextBlock.ToolTip>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                        </GridViewColumn>
                         <GridViewColumn Header="Has a License" DisplayMemberBinding="{Binding HasLicense}"/>
                         <GridViewColumn Header="Has a Readme" DisplayMemberBinding="{Binding HasReadme}"/>
+                        <GridViewColumn Header="License Type" DisplayMemberBinding="{Binding LicenseType.Name,FallbackValue='None or Unknown'}"/>
+                        <!-- <GridViewColumn> -->
+                        <!--     <GridViewColumn.CellTemplate> -->
+                        <!--         <DataTemplate> -->
+                        <!--             <Button Content="Click me Once" Click="AddLicenseButton"/> -->
+                        <!--         </DataTemplate> -->
+                        <!--     </GridViewColumn.CellTemplate> -->
+                        <!-- </GridViewColumn> -->
                     </GridView.Columns>
                 </GridView>
             </ListView.View>
