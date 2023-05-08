@@ -1,0 +1,30 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:local="clr-namespace:LicenseMe"
+        xmlns:Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2" x:Class="LicenseMe.DirectoryView"
+        mc:Ignorable="d"
+        Title="Git Repositories Found" Height="450" Width="800">
+    <Grid>
+        <ListView x:Name="GitGrid" d:ItemsSource="{d:SampleData ItemCount=5}">
+            <ListView.Resources>
+                <local:GitDirectory x:Key="GitDirectory"/> 
+            </ListView.Resources>
+            <ListView.DataContext>
+                <Binding Source="{StaticResource GitDirectory}"></Binding>
+            </ListView.DataContext>
+            <ListView.View>
+                <GridView>
+                    <GridView.Columns>
+                        <GridViewColumn Header="Repository Name" DisplayMemberBinding="{Binding Name}"/>
+                        <GridViewColumn Header="Repository Path" DisplayMemberBinding="{Binding Path}"/>
+                        <GridViewColumn Header="Has a License" DisplayMemberBinding="{Binding HasLicense}"/>
+                        <GridViewColumn Header="Has a Readme" DisplayMemberBinding="{Binding HasReadme}"/>
+                    </GridView.Columns>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

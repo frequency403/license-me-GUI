@@ -1,0 +1,15 @@
+﻿<Window x:Class="LicenseMe.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:LicenseMe"
+        mc:Ignorable="d"
+        Title="LicenseMe" Height="183" Width="376">
+    <Grid>
+        <Button Content="Start Searching" HorizontalAlignment="Left" Margin="30,108,0,0" VerticalAlignment="Top" Width="138" Click="Button_Click"/>
+        <Button Content="Close Program" HorizontalAlignment="Left" Height="20" Margin="223,108,0,0" VerticalAlignment="Top" Width="101" Click="CloseProgramClick"/>
+        <TextBlock HorizontalAlignment="Center" Height="58" Margin="0,10,0,0" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Width="315" FontWeight="Bold" FontSize="20" FontFamily="Segoe UI Semibold" TextAlignment="Center"><Run Language="de-de" Text="Welcome to the License-Me Graphical Application "/></TextBlock>
+
+    </Grid>
+</Window>
