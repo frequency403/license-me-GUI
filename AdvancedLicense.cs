@@ -6,13 +6,6 @@ namespace LicenseMe;
 
 public class AdvancedLicense : BasicLicense
 {
-    // public string Key { get; set; }
-    // public string Name { get; set; }
-    // [JsonPropertyName("spdx_id")]
-    // public string SpdxId { get; set; }
-    // public string Url { get; set; }
-    // [JsonPropertyName("node_id")]
-    // public string NodeId { get; set; }
     [JsonPropertyName("html_url")]
     public string HtmlUrl { get; set; }
     public string Description { get; set; }

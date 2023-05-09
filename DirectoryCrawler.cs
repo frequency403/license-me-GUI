@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.IO.Enumeration;
 using System.Linq;
@@ -24,7 +25,7 @@ public static class DirectoryCrawler
                 stack.Push(child);
         }
     }
-    
+
     public static IEnumerable<DirectoryInfo> GetDirectoriesWithoutThrowing(
         DirectoryInfo dir)
     {
@@ -32,26 +33,31 @@ public static class DirectoryCrawler
         {
             return dir.GetDirectories();
         }
-        catch (Exception)//if possible catch a more derived exception
+        catch (Exception) //if possible catch a more derived exception
         {
             return Enumerable.Empty<DirectoryInfo>();
         }
     }
     
-    public static async IAsyncEnumerable<GitDirectory> GetGitDirectories()
+    public static async Task<ObservableCollection<GitDirectory>> GetGitDirectories()
     {
-        var counter = 0;
-        foreach (var drive in DriveInfo.GetDrives())
+        return await Task.Run(() =>
+        {
+            var counter = 0;
+            var list = new ObservableCollection<GitDirectory>();
+            foreach (var drive in DriveInfo.GetDrives())
             {
                 foreach (var directory in new[] { new DirectoryInfo(drive.Name) }
-                             .Traverse(dir => GetDirectoriesWithoutThrowing(dir)).Where(e =>
+                             .Traverse(GetDirectoriesWithoutThrowing).Where(e =>
                                  e.Name.Contains(".git") &&
                                  !(e.Name.Contains(".github") || e.Name.Contains("AppData"))))
                 {
-                    yield return new GitDirectory(counter, directory.Parent.FullName);
+                    list.Add(new GitDirectory(counter, directory.Parent.FullName));
                     counter++;
                 }
             }
+
+            return list;
+        });
     }
-    
 }

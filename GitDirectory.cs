@@ -1,30 +1,40 @@
 ﻿using System;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using Microsoft.VisualBasic;
 
 namespace LicenseMe;
 
-public class GitDirectory
+public class GitDirectory : INotifyPropertyChanged
 {
     public int Id { get; }
     public string Path { get; }
-    
+
     public string DisplayPath { get; set; }
     public string Name { get; }
     public bool HasLicense { get; set; }
-    
+
     public string? LicensePath { get; set; }
-    
+
     public BasicLicense? LicenseType { get; set; }
     public bool HasReadme { get; set; }
-    
-    public string? ReadmePath { get; set; }
-    
-    
 
+    public string? ReadmePath { get; set; }
+
+
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    public void NotifyPropertyChanged(string propName)
+    {
+        if(this.PropertyChanged != null)
+            this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
+    }
+    
     public GitDirectory(int id, string path)
     {
         Id = id;
@@ -32,12 +42,11 @@ public class GitDirectory
         BeautifyPath();
         Name = Path.Split(System.IO.Path.DirectorySeparatorChar).LastOrDefault("UNKNOWN");
         FileChecker();
-        if(HasLicense) DetermineLicense();
+        if (HasLicense) DetermineLicense();
     }
 
     public GitDirectory()
     {
-        
     }
 
     private void BeautifyPath()
@@ -45,7 +54,9 @@ public class GitDirectory
         var pathSplit = Path.Split(System.IO.Path.DirectorySeparatorChar);
         try
         {
-            DisplayPath = pathSplit.Length >= 5 ? $"{pathSplit[0]}{System.IO.Path.DirectorySeparatorChar}{pathSplit[1]}{System.IO.Path.DirectorySeparatorChar}....{System.IO.Path.DirectorySeparatorChar}{pathSplit[^2]}{System.IO.Path.DirectorySeparatorChar}{pathSplit[^1]}" : Path;
+            DisplayPath = pathSplit.Length >= 5
+                ? $"{pathSplit[0]}{System.IO.Path.DirectorySeparatorChar}{pathSplit[1]}{System.IO.Path.DirectorySeparatorChar}....{System.IO.Path.DirectorySeparatorChar}{pathSplit[^2]}{System.IO.Path.DirectorySeparatorChar}{pathSplit[^1]}"
+                : Path;
         }
         catch (Exception)
         {
@@ -125,18 +136,18 @@ public class GitDirectory
         await using var licenseFile = new FileStream(LicensePath, FileMode.Open);
         var file = new byte[licenseFile.Length];
         await licenseFile.ReadAsync(file);
-        if(LicenseHolder.Licenses is null) LicenseHolder.InitLicenses();
         var fileAsString = Encoding.ASCII.GetString(file);
-        await foreach (var license in LicenseHolder.Licenses)
+        await foreach (var license in GithubAPICommunicator.GetLicenses())
         {
-            if (fileAsString.Contains(license.Key) || fileAsString.Contains(license.Name) || fileAsString.Contains(license.SpdxId))
+            if (fileAsString.Contains(license.Key) || fileAsString.Contains(license.Name) ||
+                fileAsString.Contains(license.SpdxId))
             {
                 LicenseType = license;
             }
         }
     }
 
-    private async Task AddLicense(BasicLicense license)
+    public async Task AddLicense(BasicLicense license)
     {
         var username = Interaction.InputBox("Please enter your full name:");
         //TODO UsernameCheck and Verification
@@ -147,6 +158,84 @@ public class GitDirectory
         await newLicenseFile.WriteAsync(Encoding.ASCII.GetBytes(alicense.Body));
         HasLicense = true;
         LicensePath = lFilePath;
+        LicenseType = license;
+        NotifyPropertyChanged("HasLicense");
+        NotifyPropertyChanged("LicenseType");
     }
 
+    public async Task AddReadme()
+    {
+        switch (MessageBox.Show("This will generate a Readme-Template with the given project name. Continue?",
+                    "Genereate README.md", MessageBoxButton.OKCancel, MessageBoxImage.Question))
+        {
+            case MessageBoxResult.OK:
+                try
+                {
+                    await using (var fileStream = new FileStream($"{Path}{System.IO.Path.DirectorySeparatorChar}README.md",
+                               FileMode.CreateNew))
+                    {
+                        await fileStream.WriteAsync(Encoding.Default.GetBytes(await ReadmeText()));
+                    }
+                    HasReadme = true;
+                    ReadmePath = $"{Path}{System.IO.Path.DirectorySeparatorChar}README.md";
+                    NotifyPropertyChanged("HasReadme");
+                    MessageBox.Show("Readme was successfully created!", "Creation successful", MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                }
+                catch (Exception e)
+                {
+                    MessageBox.Show($"Something went wrong while creating the Readme.md\n\nReason: {e.Message}");
+                }
+                break;
+            case MessageBoxResult.Cancel:
+                break;
+            case MessageBoxResult.Yes:
+            case MessageBoxResult.No:
+            case MessageBoxResult.None:
+            default:
+                break;
+        }
+    }
+
+    public void RemoveReadme()
+    {
+        if (HasReadme)
+        {
+            File.Delete(ReadmePath);
+            HasReadme = false;
+            ReadmePath = null;
+            NotifyPropertyChanged("HasReadme");
+            MessageBox.Show("Readme was successfully removed!", "Deleted readme file", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+        else
+        {
+            MessageBox.Show("Cannot remove a non-existing readme file!", "Error removing readme file", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    public void RemoveLicense()
+    {
+        if (HasLicense)
+        {
+            File.Delete(LicensePath);
+            HasLicense = false;
+            LicensePath = null;
+            LicenseType = null;
+            NotifyPropertyChanged("HasLicense");
+            NotifyPropertyChanged("LicenseType");
+            MessageBox.Show("License was successfully removed!", "Deleted license file", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+        }
+        else
+        {
+            MessageBox.Show("Cannot remove a non-existing license!", "Error deleting license file", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+    }
+
+    private async Task<string> ReadmeText()
+    {
+        using var client = new HttpClient();
+        var text = await client.GetStringAsync(
+            Settings.SettingValues.ReadmeUrl);
+        return text.Replace(Settings.SettingValues.ReplaceInReadme, $"# {Name.ToUpper()}");
+    }
 }

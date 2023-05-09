@@ -5,11 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:LicenseMe"
         mc:Ignorable="d"
-        Title="LicenseMe" Height="183" Width="376">
+        Title="LicenseMe" Height="221" Width="341">
     <Grid>
-        <Button Content="Start Searching" HorizontalAlignment="Left" Margin="30,108,0,0" VerticalAlignment="Top" Width="138" Click="Button_Click"/>
-        <Button Content="Close Program" HorizontalAlignment="Left" Height="20" Margin="223,108,0,0" VerticalAlignment="Top" Width="101" Click="CloseProgramClick"/>
-        <TextBlock HorizontalAlignment="Center" Height="58" Margin="0,10,0,0" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Width="315" FontWeight="Bold" FontSize="20" FontFamily="Segoe UI Semibold" TextAlignment="Center"><Run Language="de-de" Text="Welcome to the License-Me Graphical Application "/></TextBlock>
-
+        <TextBlock HorizontalAlignment="Center" Height="58" Margin="0,10,0,0" TextWrapping="WrapWithOverflow" VerticalAlignment="Top" Width="270" FontWeight="Bold" FontSize="20" FontFamily="Segoe UI Semibold" TextAlignment="Center"><Run Language="de-de" Text="Welcome to the License-Me Graphical Application "/></TextBlock>
+        <TextBlock HorizontalAlignment="Center" Height="40" Margin="0,73,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="270" FontSize="9" TextAlignment="Center" FontFamily="Segoe UI Variable Text"><Run Text="This application will search through your Computer, to find Git-Repository's."/><Run Language="de-de" Text=" The Licenses used are based on the licenses available trough the GitHub REST-API."/><Run Text=" "/></TextBlock>
+        <TextBlock HorizontalAlignment="Center" Height="13" Margin="0,143,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="135" FontSize="9" TextAlignment="Center"><Hyperlink NavigateUri="https://github.com/frequency403" RequestNavigate="OpenGithubLink">Written by ©2023 Oliver Schantz</Hyperlink></TextBlock>
+        <Grid Height="20" Margin="36,118,35,0" UseLayoutRounding="True" VerticalAlignment="Top">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Start Searching" Click="SearchForGitDirectories"/>
+            <Button Grid.Column="1" Content="Open Settings" Click="OpenSettings"/>
+            <Button Grid.Column="2" Content="Close Program" Click="CloseProgramClick"/>
+        </Grid>
     </Grid>
 </Window>
