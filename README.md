@@ -8,7 +8,19 @@ Download the Ready-to-Run Executable from the Releases
 
 ### Installing
 
-Is not needed, the program is a Standalone-Application.
+Is not needed, the program is a Standalone-Application.  
+The Program needs to run as Administrator!
+
+### Settings
+
+The Program will generate a "settings.json" file in its Execution-directory  
+There will the settings be saved
+
+The Setting-Values are:
+- GitHub Username (needed for API-Communication)
+- GitHub Token (optional, adding mor API-Request possibilities)
+- License-Link (A link to a Plain License-File in the Internet, that will be used as Template)
+- ReplaceInReadme (The Phrase i.e.```# TITLE``` that will be replaced with the repo-name)
 
 ## Built With
 
