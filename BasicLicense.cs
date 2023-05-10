@@ -17,15 +17,6 @@ public class BasicLicense
 
     public async Task<AdvancedLicense?> GetAdvancedLicenseInformation()
     {
-        using var client = new HttpClient();
-        var response = new HttpResponseMessage();
-        client.DefaultRequestHeaders.Add("User-Agent", "frequency403");
-        client.DefaultRequestHeaders.Add("Accept", "application/vnd.github+json");
-        client.DefaultRequestHeaders.Add("X-GitHub-Api-Version", "2022-11-28");
-        response = await client.GetAsync(Url);
-        return JsonSerializer.Deserialize<AdvancedLicense>(await response.Content.ReadAsStringAsync(), new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true
-        });
+        return await GithubApiCommunicator.GetAdvancedInformation(this);
     }
 }

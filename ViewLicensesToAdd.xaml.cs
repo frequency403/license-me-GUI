@@ -20,7 +20,7 @@ public partial class ViewLicensesToAdd : Window
 
     public async Task LoadLicenses()
     {
-        await foreach (var license in GithubAPICommunicator.GetLicenses())
+        await foreach (var license in GithubApiCommunicator.GetLicenses())
         {
             LicenseView.Items.Add(license);
         }

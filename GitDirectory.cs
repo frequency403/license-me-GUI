@@ -137,28 +137,57 @@ public class GitDirectory : INotifyPropertyChanged
         var file = new byte[licenseFile.Length];
         await licenseFile.ReadAsync(file);
         var fileAsString = Encoding.ASCII.GetString(file);
-        await foreach (var license in GithubAPICommunicator.GetLicenses())
+        await foreach (var license in GithubApiCommunicator.GetLicenses())
         {
-            if (fileAsString.Contains(license.Key) || fileAsString.Contains(license.Name) ||
-                fileAsString.Contains(license.SpdxId))
+            try
             {
-                LicenseType = license;
+                var advanced = await license.GetAdvancedLicenseInformation();
+                var range = 11;
+                if (advanced.Body.StartsWith("\t\t"))
+                {
+                    range *= 2;
+                }
+                if (fileAsString.StartsWith(advanced.Body[..range]))
+                {
+                    LicenseType = license;
+                }
+            }
+            catch (Exception)
+            {
+                LicenseType = null;
             }
         }
     }
 
     public async Task AddLicense(BasicLicense license)
     {
-        var username = Interaction.InputBox("Please enter your full name:");
+        var userDialog = new UserInput("Please enter your full name:", "Enter your first and lastname");
+        if (userDialog.ShowDialog() is false or null)
+        {
+            MessageBox.Show("Adding aborted!", "Aborted", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         //TODO UsernameCheck and Verification
-        var lFilePath = LicensePath ?? Path + System.IO.Path.DirectorySeparatorChar + "LICENSE";
-        await using var newLicenseFile = new FileStream(lFilePath, FileMode.OpenOrCreate);
-        var alicense = await license.GetAdvancedLicenseInformation();
-        alicense?.Personalize(username);
-        await newLicenseFile.WriteAsync(Encoding.ASCII.GetBytes(alicense.Body));
+        var advancedLicenseInformation = await license.GetAdvancedLicenseInformation();
+        advancedLicenseInformation?.Personalize(userDialog.InputOfUser);
+        await using (var newLicenseFile = new FileStream(LicensePath ?? Path + System.IO.Path.DirectorySeparatorChar + "LICENSE", FileMode.OpenOrCreate))
+        {
+            await newLicenseFile.WriteAsync(Encoding.ASCII.GetBytes(advancedLicenseInformation.Body));
+            await newLicenseFile.FlushAsync();
+        }
         HasLicense = true;
-        LicensePath = lFilePath;
+        LicensePath ??= Path + System.IO.Path.DirectorySeparatorChar + "LICENSE";
         LicenseType = license;
+        if (MessageBox.Show(
+                "Do you want to add the License to a ReadmeFile\nor generate a new one with the chosen license?",
+                "Add License", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
+        {
+            var ww = new Waiting("Processing your request....");
+            ww.Show();
+            await PhraseReplacer.InsertLicenseToReadme(this);
+            ww.Close();
+            NotifyPropertyChanged("HasReadme");
+        }
         NotifyPropertyChanged("HasLicense");
         NotifyPropertyChanged("LicenseType");
     }
@@ -166,7 +195,7 @@ public class GitDirectory : INotifyPropertyChanged
     public async Task AddReadme()
     {
         switch (MessageBox.Show("This will generate a Readme-Template with the given project name. Continue?",
-                    "Genereate README.md", MessageBoxButton.OKCancel, MessageBoxImage.Question))
+                    "Generate README.md", MessageBoxButton.OKCancel, MessageBoxImage.Question))
         {
             case MessageBoxResult.OK:
                 try

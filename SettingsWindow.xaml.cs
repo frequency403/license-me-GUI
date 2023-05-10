@@ -7,7 +7,8 @@ public partial class SettingsWindow : Window
     public SettingsWindow()
     {
         InitializeComponent();
-        WindowStyle = WindowStyle.None;
+        WindowStyle = WindowStyle.ThreeDBorderWindow;
+        ResizeMode = ResizeMode.NoResize;
         GhUsername.Text = Settings.SettingValues.GitHubUser;
         GhToken.Text = Settings.SettingValues.GitHubToken;
         GhReadmeLink.Text = Settings.SettingValues.ReadmeUrl;

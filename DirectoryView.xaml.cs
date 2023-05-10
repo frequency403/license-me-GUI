@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace LicenseMe;
@@ -47,5 +48,11 @@ public partial class DirectoryView : Window
         var gd = GitGrid.SelectedItem as GitDirectory;
         gd.RemoveReadme();
 
+    }
+
+    private void OpenExplorerClick(object sender, RoutedEventArgs e)
+    {
+        var gd = GitGrid.SelectedItem as GitDirectory;
+        Process.Start("explorer.exe", gd.Path);
     }
 }

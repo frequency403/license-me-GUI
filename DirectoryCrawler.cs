@@ -12,7 +12,7 @@ namespace LicenseMe;
 
 public static class DirectoryCrawler
 {
-    public static IEnumerable<T> Traverse<T>(
+    private static IEnumerable<T> Traverse<T>(
         this IEnumerable<T> source
         , Func<T, IEnumerable<T>> childrenSelector)
     {
@@ -26,7 +26,7 @@ public static class DirectoryCrawler
         }
     }
 
-    public static IEnumerable<DirectoryInfo> GetDirectoriesWithoutThrowing(
+    private static IEnumerable<DirectoryInfo> GetDirectoriesWithoutThrowing(
         DirectoryInfo dir)
     {
         try

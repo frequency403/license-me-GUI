@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Navigation;
-using static LicenseMe.GithubAPICommunicator;
+using static LicenseMe.GithubApiCommunicator;
 
 namespace LicenseMe;
 
@@ -17,14 +12,20 @@ public partial class MainWindow
 {
     public MainWindow()
     {
-        
         InitializeComponent();
         WindowStyle = WindowStyle.ToolWindow;
     }
 
     private async void SearchForGitDirectories(object sender, RoutedEventArgs e)
     {
-        await Settings.InitSettings();
+        if (Settings.SettingValues is null) await Settings.InitSettings();
+        if (RateLimitReached(out var date) is null or true)
+        {
+            MessageBox.Show(
+                $"The GitHub API Limit for requests has been reached.\nThe Program can not continue until the limit is reset!\n\nThe Limit resets at {date:G}\n\nConsider using a Token in the program settings\nand get your Token from\n\nhttps://github.com/settings/tokens",
+                "API-Limit Reached", MessageBoxButton.OK, MessageBoxImage.Error);
+            return;
+        }
         var gitViewWindow = new DirectoryView();
         gitViewWindow.Show();
         await gitViewWindow.UpdateListView();
