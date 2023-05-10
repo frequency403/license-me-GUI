@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace LicenseMe;
 
+/// <summary>
+/// Basic License information given by the Git-Hub API
+/// </summary>
 public class BasicLicense
 {
     public string Key { get; set; }
@@ -15,6 +18,10 @@ public class BasicLicense
     [JsonPropertyName("node_id")]
     public string NodeId { get; set; }
 
+    /// <summary>
+    /// Asynchronously gets advanced information about this license from the GitHub-API
+    /// </summary>
+    /// <returns></returns>
     public async Task<AdvancedLicense?> GetAdvancedLicenseInformation()
     {
         return await GithubApiCommunicator.GetAdvancedInformation(this);

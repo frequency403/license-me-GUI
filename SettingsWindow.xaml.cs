@@ -4,6 +4,9 @@ namespace LicenseMe;
 
 public partial class SettingsWindow : Window
 {
+    /// <summary>
+    /// Loads the Settings-Window with the Values provided by the Settings-Object
+    /// </summary>
     public SettingsWindow()
     {
         InitializeComponent();
@@ -15,6 +18,11 @@ public partial class SettingsWindow : Window
         GhPhraseToReplace.Text = Settings.SettingValues.ReplaceInReadme;
     }
 
+    /// <summary>
+    /// Saves the Settings
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void SaveSettings(object sender, RoutedEventArgs e)
     {
         Settings.SettingValues.GitHubUser = GhUsername.Text;
@@ -24,7 +32,12 @@ public partial class SettingsWindow : Window
         await Settings.SaveSettings();
         Close();
     }
-
+    
+    /// <summary>
+    /// Closes the Window
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void CloseWindow(object sender, RoutedEventArgs e)
     {
         Close();

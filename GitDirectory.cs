@@ -10,38 +10,76 @@ using Microsoft.VisualBasic;
 
 namespace LicenseMe;
 
+/// <summary>
+/// An Object representing a Git-Directory
+/// </summary>
 public class GitDirectory : INotifyPropertyChanged
 {
     public int Id { get; }
+    
+    /// <summary>
+    /// The Absolute Path
+    /// </summary>
     public string Path { get; }
-
+    
+    /// <summary>
+    /// The beautified Path
+    /// </summary>
     public string DisplayPath { get; set; }
+    
+    /// <summary>
+    /// The name of the repository, i.e. the parent-folder name
+    /// </summary>
     public string Name { get; }
+    
+    /// <summary>
+    /// Does it contain a License file?
+    /// </summary>
     public bool HasLicense { get; set; }
 
+    /// <summary>
+    /// If it contains a license file, this is the path to it.
+    /// </summary>
     public string? LicensePath { get; set; }
 
+    /// <summary>
+    /// If the type could be figured out, the appropriate license is saved here
+    /// </summary>
     public BasicLicense? LicenseType { get; set; }
+    
+    /// <summary>
+    /// Does it contain a readme file?
+    /// </summary>
     public bool HasReadme { get; set; }
+    
+    /// <summary>
+    /// If it does, this is the path to it.
+    /// </summary>
 
     public string? ReadmePath { get; set; }
 
 
+    /// <summary>
+    /// The event for the UI, needed for recognizing data-changes
+    /// </summary>
     public event PropertyChangedEventHandler PropertyChanged;
 
-    public void NotifyPropertyChanged(string propName)
+    /// <summary>
+    /// Triggers the event
+    /// </summary>
+    /// <param name="propName">The Property that has changed</param>
+    private void NotifyPropertyChanged(string propName)
     {
-        if(this.PropertyChanged != null)
-            this.PropertyChanged(this, new PropertyChangedEventArgs(propName));
+        PropertyChanged(this, new PropertyChangedEventArgs(propName));
     }
     
     public GitDirectory(int id, string path)
     {
         Id = id;
         Path = path;
-        BeautifyPath();
+        BeautifyPath(); //Beautification for display reasons
         Name = Path.Split(System.IO.Path.DirectorySeparatorChar).LastOrDefault("UNKNOWN");
-        FileChecker();
+        FileChecker(); //Has the directoriy already a license or readme file?
         if (HasLicense) DetermineLicense();
     }
 
@@ -49,6 +87,9 @@ public class GitDirectory : INotifyPropertyChanged
     {
     }
 
+    /// <summary>
+    /// Splits the Path if it is too long, and replaces the overflow with a "/.../"
+    /// </summary>
     private void BeautifyPath()
     {
         var pathSplit = Path.Split(System.IO.Path.DirectorySeparatorChar);
@@ -64,6 +105,9 @@ public class GitDirectory : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// This function checks, if certain versions of the readme or license already exist
+    /// </summary>
     private void FileChecker()
     {
         switch (Path)
@@ -130,7 +174,11 @@ public class GitDirectory : INotifyPropertyChanged
                 break;
         }
     }
-
+    
+    /// <summary>
+    /// This function gets called, when the property "HasLicense" is true.
+    /// It reads the existing license file and tries to recognize the license-type
+    /// </summary>
     private async void DetermineLicense()
     {
         await using var licenseFile = new FileStream(LicensePath, FileMode.Open);
@@ -158,6 +206,11 @@ public class GitDirectory : INotifyPropertyChanged
             }
         }
     }
+    
+    /// <summary>
+    /// This functions adds a License to the Repository, changing "HasLicense" and "LicensePath" if successful.
+    /// </summary>
+    /// <param name="license">The License chosen in UI</param>
 
     public async Task AddLicense(BasicLicense license)
     {
@@ -192,6 +245,9 @@ public class GitDirectory : INotifyPropertyChanged
         NotifyPropertyChanged("LicenseType");
     }
 
+    /// <summary>
+    /// This function adds a dummy README.md file.
+    /// </summary>
     public async Task AddReadme()
     {
         switch (MessageBox.Show("This will generate a Readme-Template with the given project name. Continue?",
@@ -225,6 +281,10 @@ public class GitDirectory : INotifyPropertyChanged
                 break;
         }
     }
+    
+    /// <summary>
+    /// If "HasReadme" is true, this function deletes the README file under the given "ReadmePath"
+    /// </summary>
 
     public void RemoveReadme()
     {
@@ -242,6 +302,9 @@ public class GitDirectory : INotifyPropertyChanged
         }
     }
 
+    /// <summary>
+    /// if "HasLicense" is true, this function deleted the LICENSE file under the given "LicensePath"
+    /// </summary>
     public void RemoveLicense()
     {
         if (HasLicense)
@@ -259,6 +322,11 @@ public class GitDirectory : INotifyPropertyChanged
             MessageBox.Show("Cannot remove a non-existing license!", "Error deleting license file", MessageBoxButton.OK, MessageBoxImage.Error);
         }
     }
+    
+    /// <summary>
+    /// This function gets a readmetext from the URL in the Settings-file, and replaces the "Headline" with the current Directory Name
+    /// </summary>
+    /// <returns></returns>
 
     private async Task<string> ReadmeText()
     {

@@ -8,8 +8,15 @@ namespace LicenseMe;
 public partial class ViewLicensesToAdd : Window
 {
 
+    /// <summary>
+    /// The directory to modify
+    /// </summary>
     private GitDirectory DirToModify { get; }
     
+    /// <summary>
+    /// Inits the License-Window and customizes the Header with the Repositoryname
+    /// </summary>
+    /// <param name="directory"></param>
     public ViewLicensesToAdd(GitDirectory directory)
     {
         InitializeComponent();
@@ -18,6 +25,9 @@ public partial class ViewLicensesToAdd : Window
         
     }
 
+    /// <summary>
+    /// Loads all Licenses from the GitHub API
+    /// </summary>
     public async Task LoadLicenses()
     {
         await foreach (var license in GithubApiCommunicator.GetLicenses())
@@ -27,7 +37,13 @@ public partial class ViewLicensesToAdd : Window
 
         LicenseView.SelectedItem = LicenseView.Items[0];
     }
-
+    
+    
+    /// <summary>
+    /// Feeds the Elements with Information given by the License
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void LicenseViewSelection(object sender, RoutedEventArgs e)
     {
         var license = LicenseView.SelectedItem as BasicLicense;
@@ -43,12 +59,24 @@ public partial class ViewLicensesToAdd : Window
         CondList.ItemsSource = advanced.Conditions;
         LimsList.ItemsSource = advanced.Limitations;
     }
+    
+    /// <summary>
+    /// Starts the Process of Adding a Chosen License
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
 
     private async void ChosenLicenseClick(object sender, RoutedEventArgs e)
     {
         await DirToModify.AddLicense(LicenseView.SelectedItem as BasicLicense);
         Close();
     }
+    
+    /// <summary>
+    /// Closes this window.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
 
     private void AbortLicensingClick(object sender, RoutedEventArgs e)
     {

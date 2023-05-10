@@ -2,6 +2,9 @@
 
 namespace LicenseMe;
 
+/// <summary>
+/// An Object representing Rate-Limit Information
+/// </summary>
 public class GitHubRateLimit
 {
     [JsonPropertyName("limit")]

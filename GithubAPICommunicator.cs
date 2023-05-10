@@ -11,11 +11,19 @@ namespace LicenseMe;
 
 public static class GithubApiCommunicator
 {
+    /// <summary>
+    /// An object representing the Rate-Limit information given by the API
+    /// </summary>
     private static GitHubRateLimit? RateLimit { get; }
 
+    /// <summary>
+    /// The HTTP-Client, that is renewed with every API-Call
+    /// </summary>
     private static HttpClient? _httpClient;
 
-
+    /// <summary>
+    /// Prepares the Client with the given Headers
+    /// </summary>
     private static void PrepareClient()
     {
         _httpClient?.DefaultRequestHeaders.Clear();
@@ -33,6 +41,7 @@ public static class GithubApiCommunicator
         PrepareClient();
         try
         {
+            // Getting the Rate-Limit Object
             RateLimit = JsonSerializer.Deserialize<GitHubRateLimit>(
                 _httpClient.GetAsync("https://api.github.com/rate_limit").Result.Content.ReadAsStringAsync().Result
                     .Split("rate")[1].Replace("}}", "}").Replace("\":{", "{").Trim());
@@ -43,6 +52,11 @@ public static class GithubApiCommunicator
         }
     }
 
+    /// <summary>
+    /// Fetches all available Licenses from the API
+    /// </summary>
+    /// <param name="url">the URL that will be called, has default parameter</param>
+    /// <returns>IAsyncEnumerable</returns>
     public static async IAsyncEnumerable<BasicLicense?> GetLicenses(
         string url = "https://api.github.com/licenses?per_page=100")
     {
@@ -74,6 +88,11 @@ public static class GithubApiCommunicator
         }
     }
 
+    /// <summary>
+    /// Gets advanced licenseinformation for the license given.
+    /// </summary>
+    /// <param name="license">The License, that advanced information is needed of</param>
+    /// <returns></returns>
     public static async Task<AdvancedLicense?> GetAdvancedInformation(BasicLicense license)
     {
         PrepareClient();
@@ -84,6 +103,11 @@ public static class GithubApiCommunicator
         });
     }
 
+    /// <summary>
+    /// Chechs if the Rate-Limit is reached, and tells when the API can be used again
+    /// </summary>
+    /// <param name="expired"></param>
+    /// <returns></returns>
     public static bool? RateLimitReached(out DateTime? expired)
     {
         if (RateLimit is null)

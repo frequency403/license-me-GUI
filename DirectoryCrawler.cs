@@ -12,6 +12,13 @@ namespace LicenseMe;
 
 public static class DirectoryCrawler
 {
+    /// <summary>
+    /// Traverses down the Directories
+    /// </summary>
+    /// <param name="source"></param>
+    /// <param name="childrenSelector"></param>
+    /// <typeparam name="T"></typeparam>
+    /// <returns></returns>
     private static IEnumerable<T> Traverse<T>(
         this IEnumerable<T> source
         , Func<T, IEnumerable<T>> childrenSelector)
@@ -25,6 +32,12 @@ public static class DirectoryCrawler
                 stack.Push(child);
         }
     }
+    
+    /// <summary>
+    /// Enumerates the Directories that dont throw an exception
+    /// </summary>
+    /// <param name="dir"></param>
+    /// <returns></returns>
 
     private static IEnumerable<DirectoryInfo> GetDirectoriesWithoutThrowing(
         DirectoryInfo dir)
@@ -39,6 +52,10 @@ public static class DirectoryCrawler
         }
     }
     
+    /// <summary>
+    /// Searches the whole machine for directories, that have a ".git" folder in them
+    /// </summary>
+    /// <returns>An ObservableCollection of GitDirectory Objects</returns>
     public static async Task<ObservableCollection<GitDirectory>> GetGitDirectories()
     {
         return await Task.Run(() =>

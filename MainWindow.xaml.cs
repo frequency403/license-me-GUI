@@ -16,6 +16,11 @@ public partial class MainWindow
         WindowStyle = WindowStyle.ToolWindow;
     }
 
+    /// <summary>
+    /// Inits the Search for the Git-Directories
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void SearchForGitDirectories(object sender, RoutedEventArgs e)
     {
         if (Settings.SettingValues is null) await Settings.InitSettings();
@@ -32,17 +37,32 @@ public partial class MainWindow
         Close();
     }
 
+    /// <summary>
+    /// Shuts down the program
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void CloseProgramClick(object sender, RoutedEventArgs e)
     {
         Application.Current.Shutdown();
     }
 
+    /// <summary>
+    /// Opens the User's default browser and opens the Hyperlink
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private void OpenGithubLink(object sender, RequestNavigateEventArgs e)
     {
         Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) {UseShellExecute = true});
         e.Handled = true;
     }
 
+    /// <summary>
+    /// Opens the Settings-Window, but Initializes the Settings before.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     private async void OpenSettings(object sender, RoutedEventArgs e)
     {
         if (Settings.SettingValues is null) await Settings.InitSettings();

@@ -6,6 +6,10 @@ namespace LicenseMe;
 
 public static class PhraseReplacer
 {
+    /// <summary>
+    /// Replaces the License-Text with the changed License
+    /// </summary>
+    /// <param name="directory">The Directory that has recieved a new license</param>
     public static async Task InsertLicenseToReadme(GitDirectory directory)
     {
         if (!directory.HasReadme)

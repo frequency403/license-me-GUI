@@ -6,6 +6,11 @@ namespace LicenseMe;
 
 public partial class UserInput : Window
 {
+    /// <summary>
+    /// A Custom Dialog Window. Needs to be called with ".ShowDialog()"
+    /// </summary>
+    /// <param name="text"></param>
+    /// <param name="head"></param>
     public UserInput(string text, string head = "InputPrompt")
     {
         InitializeComponent();

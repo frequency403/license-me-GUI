@@ -8,12 +8,23 @@ namespace LicenseMe;
 
 public static class Settings
 {
+    /// <summary>
+    /// Path to Settingsfile
+    /// </summary>
     private static readonly string SettingsFilePath = Environment.CurrentDirectory + Path.DirectorySeparatorChar + "settings.json";
+    /// <summary>
+    /// The File Handle
+    /// </summary>
     private static FileStream? _settingsFileHandle;
+    /// <summary>
+    /// An object, representing the Values of the Settings
+    /// </summary>
     public static SettingValues? SettingValues;
     
     
-
+    /// <summary>
+    /// Inits the Settings-file, creates a new one with sample data if no file exists.
+    /// </summary>
     public static async Task InitSettings()
     {
         _settingsFileHandle = !File.Exists(SettingsFilePath)
@@ -35,7 +46,10 @@ public static class Settings
         }
         SettingValues = JsonSerializer.Deserialize<SettingValues>(Encoding.UTF8.GetString(b));
     }
-
+    
+    /// <summary>
+    /// Saves the Settings changed. Overwrites the whole file
+    /// </summary>
     public static async Task SaveSettings()
     {
         _settingsFileHandle.Position = 0;

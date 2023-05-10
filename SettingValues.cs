@@ -1,5 +1,8 @@
 ﻿namespace LicenseMe;
 
+/// <summary>
+/// An Object, representing the Values of Settings available
+/// </summary>
 public class SettingValues
 {
     public string? GitHubUser { get; set; }
