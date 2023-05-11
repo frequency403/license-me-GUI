@@ -35,7 +35,7 @@ The Setting-Values are:
 ## Built With
 
   - [JetBrains Rider](https://jetbrains.com/de-de/rider) - IDE
-  - [Creative Commons](https://creativecommons.org/) - Used to choose
+  - [Choose A License](https://choosealicense.com/) - Used to choose
     the license
 
 ## Authors
