@@ -1,6 +1,16 @@
 # LICENSE ME
 
 The GUI-Adaption from my Rust-CLI-Program [License-Me](https://github.com/frequency403/license-me)
+
+## The Initial Idea
+
+As this is my first Program with a Graphical Interface,  
+this program's purpose was to teach me, how to design and use  
+different kinds of control elements in windows gui.
+
+The initial requirement for the program, was to offer the user  
+an easy-to-use GUI for licensing his projects.
+
 ## Getting Started
 
 Download the Ready-to-Run Executable from the Releases
